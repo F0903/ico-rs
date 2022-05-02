@@ -43,7 +43,7 @@ pub fn convert(png_path: impl AsRef<Path>) -> Result<Vec<u8>> {
 	Ok(buf)
 }
 
-pub fn write_ico(png_path: impl AsRef<Path>, out_path: impl AsRef<Path>) -> Result<()> {
+pub fn convert_file(png_path: impl AsRef<Path>, out_path: impl AsRef<Path>) -> Result<()> {
 	let buf = convert(png_path)?;
 	let mut path = PathBuf::from(out_path.as_ref());
 	path.set_extension("ico");
