@@ -1,11 +1,11 @@
 use super::{
 	chunk::{ChunkData, ChunkType},
 	png_meta::PngMetadata,
-	Result,
+	PngData, Result,
 };
 use std::convert::TryInto;
-use std::fs::read;
-use std::path::Path;
+
+const MAGIC_HASH: u64 = 9894494448401390090;
 
 #[derive(Default)]
 pub struct PngParser {}
@@ -17,7 +17,7 @@ impl PngParser {
 
 	fn verify_signature(signature: [u8; 8]) -> bool {
 		let hash = u64::from_be_bytes(signature);
-		hash == 9894494448401390090
+		hash == MAGIC_HASH
 	}
 
 	fn parse_header_chunk(header_data: &[u8]) -> Result<ChunkData> {
@@ -98,9 +98,8 @@ impl PngParser {
 		}
 	}
 
-	pub fn parse_header(&self, file: impl AsRef<Path>) -> Result<PngMetadata> {
-		let data = read(file.as_ref())
-			.map_err(|_| "Could not read image file. Have you entered the path correctly?")?;
+	pub fn parse_header(&self, data: &PngData) -> Result<PngMetadata> {
+		let data = data.data();
 		if !Self::verify_signature(data[..8].try_into().unwrap()) {
 			return Err("Could not verify PNG signature.");
 		}
